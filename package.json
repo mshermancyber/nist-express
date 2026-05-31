@@ -1,0 +1,52 @@
+{
+  "name": "nist-express",
+  "version": "1.1.0",
+  "description": "Enterprise Security Architecture Assessment Platform — generates ARB packages for AWS solutions aligned to NIST 800-53 Rev 5, CIS v8, FIPS 199, and AWS Well-Architected.",
+  "license": "GPL-3.0-only",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "test": "jest",
+    "lint": "tsc --noEmit",
+    "server:install": "bash scripts/install.sh",
+    "server:start": "bash scripts/start.sh",
+    "server:stop": "bash scripts/stop.sh",
+    "server:status": "bash scripts/status.sh",
+    "server:examples": "bash scripts/run-examples.sh"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
+    "helmet": "^7.1.0",
+    "js-yaml": "^4.1.0",
+    "multer": "^2.0.1",
+    "pdfkit": "^0.15.0",
+    "pg": "^8.12.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/compression": "^1.7.5",
+    "@types/cookie-parser": "^1.4.7",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.12",
+    "@types/js-yaml": "^4.0.9",
+    "@types/multer": "^1.4.12",
+    "@types/node": "^20.14.0",
+    "@types/pdfkit": "^0.13.4",
+    "@types/pg": "^8.11.6",
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0",
+    "@types/supertest": "^6.0.2",
+    "ts-jest": "^29.2.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.5.0"
+  }
+}

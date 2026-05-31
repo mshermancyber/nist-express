@@ -1,0 +1,26 @@
+# nist-express CODEOWNERS
+# Lines later in the file take precedence.
+
+# Default owner — every PR notifies this group.
+*                                  @security-architecture
+
+# Security-sensitive areas — additional review required.
+/src/auth/                         @security-architecture @platform-security
+/src/store/                        @security-architecture @platform-security
+/src/engine/asvs.ts                @security-architecture
+/src/engine/safeFetch.ts           @security-architecture
+/src/routes/                       @platform-engineering
+
+# Compliance / SSP catalogs — assessor + compliance review.
+/src/data/nistControls.ts          @compliance-office @security-architecture
+/src/data/nist171.ts               @compliance-office
+/src/data/fedramp.ts               @compliance-office
+/src/engine/ssp.ts                 @compliance-office @security-architecture
+/src/engine/fedrampPackage.ts      @compliance-office
+
+# Frontend.
+/public/                           @frontend-engineering
+
+# Docs.
+/docs/                             @technical-writers @security-architecture
+/README.md                         @technical-writers

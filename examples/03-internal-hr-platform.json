@@ -1,0 +1,29 @@
+{
+  "_comment": "Example 3 — Internal HR system. Employee PII, internal-only, moderate impact. Exercises: internal-only architecture (no CloudFront), single-region recovery, SOC2 + NIST CSF 2.0 compliance scope, employee record handling.",
+  "business": {
+    "applicationName": "PeopleOps HR Platform",
+    "businessArea": "Human Resources",
+    "businessProblem": "Centralises performance reviews, comp planning, and workforce reporting across the company.",
+    "userTypes": ["Employees", "Contractors"],
+    "userInteractionDescription": "Employees log in over the corporate SSO to view records, submit reviews, and access reports."
+  },
+  "data": {
+    "dataCategories": ["Employee Information", "Operational Data"],
+    "confidentialToCompany": true,
+    "sensitiveDataTags": ["PII"]
+  },
+  "impact": {
+    "confidentialityWorstCase": "Disclosure of comp data damages employee trust and creates HR/legal exposure.",
+    "integrityWorstCase": "Incorrect comp/performance data drives bad decisions; competitive disadvantage.",
+    "availabilityWorstCase": "Minor — employees can wait a workday before serious impact."
+  },
+  "recovery": { "rto": "24 Hours", "rpo": "1 Hour" },
+  "population": { "userCount": "1000-10000", "expectedGrowth": "Flat" },
+  "integrations": [
+    { "source": "HR Platform", "destination": "Workday HRIS", "protocol": "HTTPS", "authentication": "OAuth2", "dataDirection": "bidirectional" },
+    { "source": "HR Platform", "destination": "Internal Data Warehouse", "protocol": "JDBC/ODBC", "authentication": "Service Account", "dataDirection": "outbound" }
+  ],
+  "compliance": { "frameworks": ["SOC2", "NIST CSF 2.0", "Internal Policy Only"] },
+  "hosting": { "model": "AWS" },
+  "advanced": { "forceOkta": true }
+}

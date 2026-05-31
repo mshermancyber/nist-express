@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NIST Express — New Assessment</title>
+  <link rel="icon" type="image/jpeg" href="/logo.jpg" />
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="/device.js"></script>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to main content</a>
+<div class="app-shell">
+  <aside class="sidebar" aria-label="Workspace navigation">
+    <h1 class="brand"><img src="/logo.jpg" alt="" width="28" height="28" class="brand-logo" />NIST Express <span class="badge">v1</span></h1>
+    <div class="section-title">Workspace</div>
+    <nav>
+      <a class="active" href="/index.html">New Assessment</a>
+      <a href="/dashboard.html">Dashboard</a>
+      <a href="/users.html" id="nav-users" style="display:none">Users</a>
+    </nav>
+    <div class="section-title">AI Augmentation</div>
+    <div id="ai-pill" class="ai-pill off">Checking…</div>
+    <div class="section-title">Saved Assessments</div>
+    <nav id="saved-list"><span class="muted" style="font-size:.8rem;padding:.5rem .75rem;display:block">No saved assessments yet.</span></nav>
+    <div class="section-title">Session</div>
+    <div id="session-info" class="muted" style="font-size:.85rem;padding:.5rem .75rem">…</div>
+  </aside>
+
+  <main class="main" id="main" tabindex="-1">
+    <header class="top">
+      <div>
+        <h2 id="wizard-title">New Solution Assessment</h2>
+        <div class="subtitle">Answer in plain business language. Technical overrides available in the final section.</div>
+      </div>
+      <div class="btn-row">
+        <button class="secondary" id="save-draft" title="Save to server">Save draft</button>
+        <button class="secondary" id="download-json" title="Download current form as JSON file">⬇ Download JSON</button>
+        <button class="secondary" id="load-json-btn" title="Load a JSON file into the wizard">⬆ Load JSON</button>
+        <input type="file" id="load-json-input" accept="application/json,.json" style="display:none" />
+        <button class="secondary" id="new-assessment" title="Start a fresh assessment">+ New</button>
+        <button id="generate-btn">Generate ARB Package</button>
+      </div>
+    </header>
+
+    <div class="steps" id="steps"></div>
+
+    <form id="wizard"></form>
+
+    <div id="iac-section" class="card" style="display:none">
+      <h3>IaC Reconciliation (optional)</h3>
+      <p class="muted">Attach a Terraform plan JSON, CloudFormation template, or CDK synth output. The next generation will reconcile your *deployed* architecture against the *described* one.</p>
+      <input type="file" id="iac-file" accept=".json,.yaml,.yml,application/json,text/yaml" />
+      <div id="iac-status" class="muted" style="margin-top:.5rem"></div>
+    </div>
+
+    <div id="status-area" role="status" aria-live="polite"></div>
+  </main>
+</div>
+<script src="/api.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>

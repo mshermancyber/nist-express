@@ -1,0 +1,30 @@
+{
+  "_comment": "Example 5 — Government analytics platform under FedRAMP HIGH. Regulated data, export-controlled material, partner + government users, multi-region. Exercises: FedRAMP HIGH baseline + FedRAMP package, NIST 800-171 CUI mapping, all 20 NIST control families, AC-17 remote-access flow, agency overlay (DoD IL4).",
+  "business": {
+    "applicationName": "FedAnalytics Mission Platform",
+    "businessArea": "Federal Mission Analytics",
+    "businessProblem": "Provides federal-mission analytics for cross-agency reporting and partner data sharing under controlled-unclassified-information (CUI) policy.",
+    "userTypes": ["Employees", "Partners", "Contractors", "System-to-System"],
+    "userInteractionDescription": "Agency analysts use a hardened web console behind GovCloud SSO; partner agencies ingest reports via API; ETL pipelines run inbound from authorised data sources."
+  },
+  "data": {
+    "dataCategories": ["Operational Data", "Intellectual Property", "Source Code"],
+    "confidentialToCompany": true,
+    "sensitiveDataTags": ["Regulated Data", "Export Controlled Data", "PII"]
+  },
+  "impact": {
+    "confidentialityWorstCase": "Disclosure of CUI or export-controlled data triggers regulatory action, contract loss, and possible criminal exposure.",
+    "integrityWorstCase": "Corrupted analytics drive incorrect federal decisions; legal action.",
+    "availabilityWorstCase": "Mission delay; political and operational fallout."
+  },
+  "recovery": { "rto": "1 Hour", "rpo": "1 Hour" },
+  "population": { "userCount": "1000-10000", "expectedGrowth": "Step changes as new agencies onboard" },
+  "integrations": [
+    { "source": "FedAnalytics", "destination": "Treasury Reporting API", "protocol": "HTTPS", "authentication": "mTLS", "dataDirection": "bidirectional" },
+    { "source": "FedAnalytics", "destination": "DOD Data Lake", "protocol": "SFTP", "authentication": "Service Account", "dataDirection": "inbound" },
+    { "source": "FedAnalytics", "destination": "Partner Agency Bus", "protocol": "Kafka", "authentication": "mTLS", "dataDirection": "outbound" }
+  ],
+  "compliance": { "frameworks": ["FedRAMP", "NIST 800-53", "NIST 800-171", "CMMC", "SOC2"] },
+  "hosting": { "model": "AWS" },
+  "advanced": { "forceMfa": true, "forceOkta": true, "multiRegion": true, "preferredAwsRegion": "us-gov-west-1", "loggingRetentionDays": 1095, "customControlIds": ["MA-2", "PE-3", "MP-6"] }
+}

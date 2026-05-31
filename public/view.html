@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NIST Express — Package Viewer</title>
+  <link rel="icon" type="image/jpeg" href="/logo.jpg" />
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="/device.js"></script>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to main content</a>
+<div class="app-shell">
+  <aside class="sidebar" aria-label="Package navigation">
+    <h1 class="brand"><img src="/logo.jpg" alt="" width="28" height="28" class="brand-logo" />NIST Express</h1>
+    <div class="section-title">Workspace</div>
+    <nav>
+      <a href="/index.html">New Assessment</a>
+      <a href="/dashboard.html">Dashboard</a>
+    </nav>
+    <div class="section-title">Package Sections</div>
+    <nav id="package-toc"></nav>
+  </aside>
+  <main class="main" id="main" tabindex="-1">
+    <header class="top">
+      <div>
+        <h2 id="title">Loading…</h2>
+        <div class="subtitle" id="subtitle"></div>
+      </div>
+      <div class="btn-row" id="export-row"></div>
+    </header>
+    <div id="content"></div>
+  </main>
+</div>
+<script src="/lib/mermaid.min.js"></script>
+<script>
+  window.mermaid.initialize({ startOnLoad: false, theme: 'dark', securityLevel: 'strict' });
+  window.__mermaid = window.mermaid;
+</script>
+<script src="/api.js"></script>
+<script src="/view.js"></script>
+</body>
+</html>

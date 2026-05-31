@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NIST Express — Diff Viewer</title>
+  <link rel="icon" type="image/jpeg" href="/logo.jpg" />
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="/device.js"></script>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to main content</a>
+<div class="app-shell">
+  <aside class="sidebar" aria-label="Diff navigation">
+    <h1 class="brand"><img src="/logo.jpg" alt="" width="28" height="28" class="brand-logo" />NIST Express</h1>
+    <nav aria-label="Workspace">
+      <a href="/index.html">New Assessment</a>
+      <a href="/dashboard.html">Dashboard</a>
+    </nav>
+    <div class="section-title">Versions</div>
+    <nav id="version-list" class="muted" aria-label="Versions" style="font-size:.85rem;padding:.5rem .75rem">…</nav>
+  </aside>
+  <main class="main" id="main" tabindex="-1">
+    <header class="top">
+      <div>
+        <h2 id="title">Compare Versions</h2>
+        <div class="subtitle" id="subtitle"></div>
+      </div>
+      <div class="btn-row" id="export-row"></div>
+    </header>
+    <div id="content"><p class="muted">Loading…</p></div>
+  </main>
+</div>
+<script src="/api.js"></script>
+<script src="/diff.js"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "_comment": "Example 2 — HIPAA-regulated patient portal. PHI, customers + employees, moderate-to-high availability. Exercises: HIPAA + HITRUST CSF mapping, PHI-specific audit events (6-year retention), Cognito-style customer identity, restricted data classification.",
+  "business": {
+    "applicationName": "MyCare Patient Portal",
+    "businessArea": "Patient Engagement & Clinical Operations",
+    "businessProblem": "Lets patients view their records, message clinicians, and schedule appointments without calling the front desk.",
+    "userTypes": ["Customers", "Employees", "Contractors"],
+    "userInteractionDescription": "Patients sign in over the web/mobile; clinicians use an internal staff console; messages are exchanged through a regulated chat channel."
+  },
+  "data": {
+    "dataCategories": ["Customer Information", "Employee Information"],
+    "confidentialToCompany": true,
+    "sensitiveDataTags": ["PHI", "PII", "Regulated Data"]
+  },
+  "impact": {
+    "confidentialityWorstCase": "Disclosure of PHI triggers HHS notification, fines, and lawsuits.",
+    "integrityWorstCase": "Altered clinical data risks patient safety and malpractice exposure.",
+    "availabilityWorstCase": "Patients cannot reach providers; safety events escalate to clinical risk."
+  },
+  "recovery": { "rto": "1 Hour", "rpo": "15 Minutes" },
+  "population": { "userCount": "1000-10000", "expectedGrowth": "Steady, ~10% YoY" },
+  "integrations": [
+    { "source": "Patient Portal", "destination": "EHR (Epic)", "protocol": "HTTPS", "authentication": "OAuth2", "dataDirection": "bidirectional" },
+    { "source": "Patient Portal", "destination": "SMS Vendor", "protocol": "HTTPS", "authentication": "API Key", "dataDirection": "outbound" }
+  ],
+  "compliance": { "frameworks": ["HIPAA", "HITRUST CSF", "SOC2", "NIST 800-53"] },
+  "hosting": { "model": "AWS" },
+  "advanced": { "forceMfa": true, "forceOkta": true, "loggingRetentionDays": 2190 }
+}

@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NIST Express — User Administration</title>
+  <link rel="icon" type="image/jpeg" href="/logo.jpg" />
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="/device.js"></script>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to main content</a>
+<div class="app-shell">
+  <aside class="sidebar" aria-label="Workspace navigation">
+    <h1 class="brand"><img src="/logo.jpg" alt="" width="28" height="28" class="brand-logo" />NIST Express <span class="badge">v1</span></h1>
+    <div class="section-title">Workspace</div>
+    <nav>
+      <a href="/index.html">New Assessment</a>
+      <a href="/dashboard.html">Dashboard</a>
+      <a class="active" href="/users.html" aria-current="page">Users</a>
+    </nav>
+    <div class="section-title">Session</div>
+    <div id="session-info" class="muted" style="font-size:.85rem;padding:.5rem .75rem">…</div>
+  </aside>
+
+  <main class="main" id="main" tabindex="-1">
+    <header class="top">
+      <div>
+        <h2>User Administration</h2>
+        <div class="subtitle">Manage users, roles, and account lifecycle. State-changing actions require recent re-authentication (sudo).</div>
+      </div>
+      <div class="btn-row">
+        <button id="refresh-btn" class="secondary">Refresh</button>
+        <button id="add-user-btn">+ Add user</button>
+      </div>
+    </header>
+
+    <section class="card" id="metrics">
+      <h3>Overview</h3>
+      <div class="grid-4" id="metrics-grid"><span class="muted">Loading…</span></div>
+    </section>
+
+    <section class="card">
+      <h3>Users</h3>
+      <div class="toolbar">
+        <input type="text" id="filter" placeholder="Search username, name, email, role…" aria-label="Filter users" style="flex:1;min-width:14rem" />
+        <label class="muted" style="display:inline-flex;gap:.4rem;align-items:center">
+          <input type="checkbox" id="show-deleted" /> Show soft-deleted
+        </label>
+        <label class="muted" style="display:inline-flex;gap:.4rem;align-items:center">
+          Page size
+          <select id="page-size" aria-label="Rows per page">
+            <option>25</option><option selected>50</option><option>100</option><option value="9999">All</option>
+          </select>
+        </label>
+      </div>
+      <div id="users-table-wrap"><span class="muted">Loading…</span></div>
+      <nav class="toolbar" id="pager" aria-label="Pagination" style="margin-top:.75rem"></nav>
+    </section>
+
+    <section class="card" id="security-card">
+      <h3>Security</h3>
+      <div class="grid-2" style="gap:1rem">
+        <div>
+          <div class="section-title" style="padding-left:0">Current lockouts</div>
+          <div id="lockouts-panel"><span class="muted">Loading…</span></div>
+        </div>
+        <div>
+          <div class="section-title" style="padding-left:0">Recent failed logins</div>
+          <div id="fail-panel"><span class="muted">Loading…</span></div>
+        </div>
+        <div>
+          <div class="section-title" style="padding-left:0">Recent password resets / changes</div>
+          <div id="pwd-panel"><span class="muted">Loading…</span></div>
+        </div>
+        <div>
+          <div class="section-title" style="padding-left:0">Recent admin actions</div>
+          <div id="admin-panel"><span class="muted">Loading…</span></div>
+        </div>
+      </div>
+    </section>
+
+    <div id="status-area" role="status" aria-live="polite"></div>
+  </main>
+</div>
+
+<!-- Add-user dialog -->
+<dialog id="add-dialog" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:1.25rem;max-width:520px;width:90%">
+  <h3 style="margin-top:0;color:var(--accent)">Add user</h3>
+  <form id="add-form" method="dialog">
+    <label>Username (required)</label><input id="f-username" type="text" required maxlength="80" />
+    <div class="grid-2">
+      <div><label>First name</label><input id="f-firstName" type="text" maxlength="60" /></div>
+      <div><label>Last name</label><input id="f-lastName" type="text" maxlength="60" /></div>
+    </div>
+    <label>Display name (required)</label><input id="f-displayName" type="text" required maxlength="120" />
+    <label>Email</label><input id="f-email" type="email" maxlength="200" />
+    <div class="grid-2">
+      <div><label>Department</label><input id="f-department" type="text" maxlength="80" /></div>
+      <div><label>Job title</label><input id="f-jobTitle" type="text" maxlength="80" /></div>
+    </div>
+    <div class="grid-2">
+      <div><label>Phone</label><input id="f-phone" type="text" maxlength="30" /></div>
+      <div><label>Timezone</label><input id="f-timezone" type="text" placeholder="America/New_York" maxlength="60" /></div>
+    </div>
+    <div id="f-password-row">
+      <label>Initial password (min 12 chars, all 4 classes)</label>
+      <input id="f-password" type="password" required minlength="12" />
+    </div>
+    <label>Role(s)</label>
+    <div class="checkbox-group" id="f-roles">
+      <label><input type="checkbox" value="admin" /> admin</label>
+      <label><input type="checkbox" value="architect" checked /> architect</label>
+      <label><input type="checkbox" value="analyst" /> analyst</label>
+      <label><input type="checkbox" value="product-owner" /> product-owner</label>
+      <label><input type="checkbox" value="approver-security" /> approver-security</label>
+      <label><input type="checkbox" value="approver-risk" /> approver-risk</label>
+      <label><input type="checkbox" value="approver-architecture" /> approver-architecture</label>
+      <label><input type="checkbox" value="approver-compliance" /> approver-compliance</label>
+    </div>
+    <div id="f-force-pwd-row">
+      <label><input type="checkbox" id="f-force-pwd" /> Require password change on first login</label>
+    </div>
+    <div id="add-error" class="alert error" style="display:none;margin-top:.75rem"></div>
+    <div class="btn-row" style="margin-top:1rem">
+      <button type="button" id="add-cancel" class="secondary">Cancel</button>
+      <button type="button" id="add-submit">Create</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Sudo prompt (re-auth for sensitive actions) -->
+<dialog id="sudo-dialog" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:1.25rem;max-width:420px;width:90%">
+  <h3 style="margin-top:0;color:var(--accent)">Confirm your password</h3>
+  <p class="muted">User-management actions require recent re-authentication.</p>
+  <label>Password</label><input id="sudo-pwd" type="password" />
+  <label>TOTP (if enabled)</label><input id="sudo-totp" type="text" pattern="\d{6}" inputmode="numeric" />
+  <div id="sudo-error" class="alert error" style="display:none;margin-top:.75rem"></div>
+  <div class="btn-row" style="margin-top:1rem">
+    <button type="button" id="sudo-cancel" class="secondary">Cancel</button>
+    <button type="button" id="sudo-submit">Confirm</button>
+  </div>
+</dialog>
+
+<script src="/api.js"></script>
+<script src="/users.js"></script>
+</body>
+</html>

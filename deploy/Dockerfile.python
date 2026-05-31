@@ -1,0 +1,39 @@
+# syntax=docker/dockerfile:1.7
+# Python AI sidecar container. The Node app (the `app` service) calls
+# this over HTTP via the PY_AI_URL env var. The sidecar centralises
+# prompt-cache priming, token-aware truncation, and the deterministic
+# FAQ fallback so the main app doesn't have to depend on an LLM
+# being reachable.
+#
+# Build from project root:
+#   docker build -f deploy/Dockerfile.python -t nist-express-ai:latest .
+# Or via compose with profile `ai`:
+#   docker compose --profile ai up -d
+
+FROM python:3.12-alpine
+WORKDIR /app
+
+ENV PYTHONUNBUFFERED=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PY_AI_PORT=14042
+
+# tini for PID-1 signals, curl for the healthcheck.
+RUN apk add --no-cache tini curl
+
+COPY python-handlers/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY python-handlers/ ./
+
+# Non-root user.
+RUN addgroup -S app && adduser -S app -G app && chown -R app:app /app
+USER app
+
+EXPOSE 14042
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=5 \
+  CMD curl -fsS "http://127.0.0.1:${PY_AI_PORT}/healthz" || exit 1
+
+ENTRYPOINT ["/sbin/tini", "--"]
+CMD ["sh", "-c", "python -m flask --app app run --host 0.0.0.0 --port ${PY_AI_PORT}"]

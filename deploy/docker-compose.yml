@@ -1,0 +1,146 @@
+# NIST Express — full container stack
+#
+# By default `docker compose up` brings the Node app only. Add profiles
+# to opt-in to the extra services:
+#
+#   docker compose -f deploy/docker-compose.yml up -d                 # app only
+#   docker compose -f deploy/docker-compose.yml --profile db up -d    # + Postgres
+#   docker compose -f deploy/docker-compose.yml --profile ai up -d    # + Python sidecar + Ollama
+#   docker compose -f deploy/docker-compose.yml --profile full up -d  # everything
+#
+# Or simply use the helper:
+#   bash scripts/docker-up.sh full
+#
+# The host:container port mapping for the app is 8080 in this tree
+# (CLAUDE.md §2). The release tree under releases/<version>/ ships
+# with 8080 instead.
+
+name: nist-express
+
+x-app-base: &app-base
+  image: nist-express:latest
+  build:
+    context: ..
+    dockerfile: deploy/Dockerfile
+  restart: unless-stopped
+  read_only: true
+  tmpfs:
+    - /tmp
+    - /app/.run
+  security_opt:
+    - no-new-privileges:true
+
+services:
+  # ---------------------------------------------------------------
+  # The main Node application — always runs.
+  # ---------------------------------------------------------------
+  app:
+    <<: *app-base
+    container_name: nist-express
+    ports:
+      - "8080:8080"            # change the host side if 8080 is taken
+    environment:
+      PORT: "8080"
+      NODE_ENV: production
+      # LOG_LEVEL: info                       # off|error|warn|info|debug|trace
+      # HTTPS is enforced unconditionally — there is no env escape.
+      # Any off-host request that arrives over plain HTTP gets either a
+      # 301 to https:// (GET/HEAD) or a 400 (state-changing). Loopback
+      # is exempt so the operator can still hit http://localhost:8080
+      # from the host itself. ALLOWED_HOSTS controls which Host headers
+      # the 301 will trust; localhost is the default.
+      ALLOWED_HOSTS: "${ALLOWED_HOSTS:-localhost,127.0.0.1}"
+      TRUST_PROXY: "${TRUST_PROXY:-1}"
+      # SCIM_TOKEN: ${SCIM_TOKEN:-}           # enables /scim/v2/*
+      DATABASE_URL: ${DATABASE_URL:-}         # set automatically by --profile db
+      PY_AI_URL: ${PY_AI_URL:-}               # set automatically by --profile ai
+      AI_BASE_URL: ${AI_BASE_URL:-}           # set by --profile ai (points at Ollama)
+      AI_API_KEY:  ${AI_API_KEY:-}
+      AI_MODEL:    ${AI_MODEL:-}
+    volumes:
+      - app-data:/app/.data                   # session secrets, audit chain, packages
+    healthcheck:
+      test: ["CMD", "wget", "--no-check-certificate", "-qO-", "https://127.0.0.1:8080/readyz"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+    depends_on:
+      db:        { condition: service_healthy, required: false }
+      python-ai: { condition: service_healthy, required: false }
+
+  # ---------------------------------------------------------------
+  # Optional: Postgres backend. Enabled by `--profile db` or `full`.
+  # The app reads DATABASE_URL from its environment.
+  # ---------------------------------------------------------------
+  db:
+    profiles: ["db", "full"]
+    image: postgres:16-alpine
+    container_name: nist-express-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: nist
+      POSTGRES_DB:   nist
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme-on-first-run}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nist -d nist"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------
+  # Optional: Python AI sidecar. Enabled by `--profile ai` or `full`.
+  # ---------------------------------------------------------------
+  python-ai:
+    profiles: ["ai", "full"]
+    image: nist-express-ai:latest
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.python
+    container_name: nist-express-ai
+    restart: unless-stopped
+    environment:
+      PY_AI_PORT:  "14042"
+      AI_BASE_URL: ${AI_BASE_URL:-http://ollama:11434/v1}
+      AI_API_KEY:  ${AI_API_KEY:-}
+      AI_MODEL:    ${AI_MODEL:-llama3.1:8b}
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:14042/healthz"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+    depends_on:
+      ollama:
+        condition: service_started
+        required: false
+
+  # ---------------------------------------------------------------
+  # Optional: local LLM for fully-offline AI. Enabled by `--profile ai`.
+  # First-run will need to pull a model:
+  #   docker compose exec ollama ollama pull llama3.1:8b
+  # ---------------------------------------------------------------
+  ollama:
+    profiles: ["ai", "full"]
+    image: ollama/ollama:latest
+    container_name: nist-express-ollama
+    restart: unless-stopped
+    volumes:
+      - ollama-data:/root/.ollama
+    # Uncomment to expose Ollama directly on the host (e.g. for
+    # debugging or for other apps on the host to call it):
+    # ports:
+    #   - "11434:11434"
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list || exit 1"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
+
+volumes:
+  app-data:
+  db-data:
+  ollama-data:

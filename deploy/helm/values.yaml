@@ -1,0 +1,35 @@
+image:
+  repository: ghcr.io/your-org/nist-express
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+env:
+  AI_BASE_URL: ""
+  AI_MODEL: ""
+  DATABASE_URL: ""
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: ""
+
+ingress:
+  enabled: false
+  className: ""
+  host: arb.example.com
+  tls: false

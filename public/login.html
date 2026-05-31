@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NIST Express — Sign In</title>
+  <link rel="icon" type="image/jpeg" href="/logo.jpg" />
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="/device.js"></script>
+  <script src="/api.js"></script>
+</head>
+<body style="display:grid;place-items:center;min-height:100vh">
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <main id="main" tabindex="-1" class="card" style="max-width:420px;width:100%;margin:2rem">
+    <div style="text-align:center;margin-bottom:1rem">
+      <img src="/logo.jpg" alt="NIST Express" width="96" height="96"
+           style="border-radius:16px;display:block;margin:0 auto 0.75rem" />
+      <h2 style="margin:0;color:var(--accent)">NIST Express</h2>
+    </div>
+    <p class="muted">Sign in to continue.</p>
+    <div id="open-banner" style="display:none" class="alert warn">
+      <strong>Open mode.</strong> No users are provisioned — anyone can sign in as anonymous admin and configure the first administrator below.
+    </div>
+    <div id="login-form">
+      <label>Username</label>
+      <input id="username" type="text" autocomplete="username" />
+      <label>Password</label>
+      <input id="password" type="password" autocomplete="current-password" />
+      <div class="btn-row" style="margin-top:1rem">
+        <button id="login-btn">Sign in</button>
+        <a id="bootstrap-link" href="#" style="display:none;align-self:center" class="muted">Provision the first admin →</a>
+      </div>
+    </div>
+    <div id="bootstrap-form" style="display:none">
+      <h3>Provision First Administrator</h3>
+      <label>Username</label>
+      <input id="bs-username" type="text" />
+      <label>Display name</label>
+      <input id="bs-display" type="text" />
+      <label>Password (min 12 chars, 2+ character classes)</label>
+      <input id="bs-password" type="password" minlength="12" />
+      <div class="btn-row" style="margin-top:1rem">
+        <button id="bs-btn">Provision admin</button>
+      </div>
+    </div>
+    <div id="status" role="status" aria-live="polite"></div>
+<script>
+(async () => {
+  const status = document.getElementById('status');
+  const me = await fetch('/api/auth/me').then(r => r.json()).catch(() => ({}));
+  const openMode = me && me.openMode;
+  if (openMode) {
+    document.getElementById('open-banner').style.display = 'block';
+    document.getElementById('bootstrap-link').style.display = 'inline';
+  }
+  document.getElementById('bootstrap-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('login-form').style.display = 'none';
+    document.getElementById('bootstrap-form').style.display = 'block';
+  });
+  document.getElementById('login-btn').addEventListener('click', async () => {
+    status.innerHTML = '';
+    const r = await apiFetch('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ username: document.getElementById('username').value, password: document.getElementById('password').value })
+    });
+    if (!r.ok) { status.innerHTML = '<div class="alert error">Sign-in failed.</div>'; return; }
+    window.location.href = '/index.html';
+  });
+  document.getElementById('bs-btn').addEventListener('click', async () => {
+    status.innerHTML = '';
+    const r = await apiFetch('/api/auth/users', {
+      method: 'POST',
+      body: JSON.stringify({
+        username: document.getElementById('bs-username').value,
+        displayName: document.getElementById('bs-display').value,
+        password: document.getElementById('bs-password').value,
+        roles: ['admin']
+      })
+    });
+    if (!r.ok) { const j = await r.json().catch(() => ({})); status.innerHTML = `<div class="alert error">${(window.esc || (x => String(x).replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]))))(j.error || 'failed')}</div>`; return; }
+    status.innerHTML = '<div class="alert success">Admin provisioned. Sign in with the new credentials.</div>';
+    document.getElementById('bootstrap-form').style.display = 'none';
+    document.getElementById('login-form').style.display = 'block';
+    document.getElementById('open-banner').style.display = 'none';
+  });
+})();
+</script>
+  </main>
+</body>
+</html>

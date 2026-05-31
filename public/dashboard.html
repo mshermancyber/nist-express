@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NIST Express — Dashboard</title>
+  <link rel="icon" type="image/jpeg" href="/logo.jpg" />
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="/device.js"></script>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to main content</a>
+<div class="app-shell">
+  <aside class="sidebar" aria-label="Workspace navigation">
+    <h1 class="brand"><img src="/logo.jpg" alt="" width="28" height="28" class="brand-logo" />NIST Express</h1>
+    <div class="section-title">Workspace</div>
+    <nav aria-label="Workspace">
+      <a href="/index.html">New Assessment</a>
+      <a class="active" href="/dashboard.html" aria-current="page">Dashboard</a>
+      <a href="/users.html" id="nav-users" style="display:none">Users</a>
+    </nav>
+    <div class="section-title">Quick Actions</div>
+    <nav aria-label="Actions"><a href="/index.html">+ New Assessment</a></nav>
+  </aside>
+  <main class="main" id="main" tabindex="-1">
+    <header class="top">
+      <div>
+        <h2>Portfolio Dashboard</h2>
+        <div class="subtitle">Control gaps, threats, residual risks, and compliance coverage across generated packages.</div>
+      </div>
+    </header>
+    <div id="content"><p class="muted">Loading…</p></div>
+  </main>
+</div>
+<script src="/api.js"></script>
+<script src="/dashboard.js"></script>
+</body>
+</html>

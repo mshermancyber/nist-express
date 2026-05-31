@@ -1,0 +1,27 @@
+{
+  "_comment": "Example 4 — Low-impact public marketing site. Public information only, relaxed RTO/RPO, no sensitive data. Exercises: LOW categorization floor, Public data classification, minimal compliance scope, validation clarification path (public users without confidentiality flag).",
+  "business": {
+    "applicationName": "Acme Marketing Website",
+    "businessArea": "Marketing & Brand",
+    "businessProblem": "Public-facing marketing pages and a leads form, replacing a CMS that the marketing team can no longer maintain.",
+    "userTypes": ["Public Users"],
+    "userInteractionDescription": "Anonymous visitors browse pages; a small percentage submits a leads form with name and email."
+  },
+  "data": {
+    "dataCategories": ["Public Information"],
+    "confidentialToCompany": false,
+    "sensitiveDataTags": []
+  },
+  "impact": {
+    "confidentialityWorstCase": "Minor embarrassment if defaced or vandalised.",
+    "integrityWorstCase": "Minor — incorrect content can be reverted quickly.",
+    "availabilityWorstCase": "Lost lead capture during outage; competitive disadvantage but no regulatory impact."
+  },
+  "recovery": { "rto": "24 Hours", "rpo": "24 Hours" },
+  "population": { "userCount": "10000+", "expectedGrowth": "Spiky around campaigns" },
+  "integrations": [
+    { "source": "Marketing Site", "destination": "Marketo", "protocol": "HTTPS", "authentication": "API Key", "dataDirection": "outbound" }
+  ],
+  "compliance": { "frameworks": ["Internal Policy Only"] },
+  "hosting": { "model": "AWS" }
+}

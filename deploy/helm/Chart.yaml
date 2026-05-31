@@ -1,0 +1,6 @@
+apiVersion: v2
+name: nist-express
+description: Enterprise Security Architecture Assessment Platform
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

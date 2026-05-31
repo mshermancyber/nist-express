@@ -1,0 +1,30 @@
+{
+  "_comment": "Example 1 — Public consumer payments app. PCI + PII, customer-facing, aggressive RTO/RPO, multi-region. Exercises: HIGH categorization, multi-region recovery, PCI DSS + DORA + NIST CSF 2.0 coverage, public-facing edge architecture.",
+  "business": {
+    "applicationName": "Consumer Payments Hub",
+    "businessArea": "Payments & Settlement",
+    "businessProblem": "Lets consumers pay merchants and run payouts; replaces a third-party processor and reduces fees.",
+    "userTypes": ["Customers", "Public Users", "Employees", "System-to-System"],
+    "userInteractionDescription": "Consumers initiate payments via web and mobile; merchants ingest via REST APIs; settlement runs server-to-server."
+  },
+  "data": {
+    "dataCategories": ["Customer Information", "Financial Data"],
+    "confidentialToCompany": true,
+    "sensitiveDataTags": ["PII", "PCI"]
+  },
+  "impact": {
+    "confidentialityWorstCase": "Disclosure of cardholder data triggers PCI fines, regulatory action, and class-action exposure.",
+    "integrityWorstCase": "Tampering with payment authorisation creates direct financial loss and breaks merchant trust.",
+    "availabilityWorstCase": "Outage halts merchant revenue and triggers SLA penalties."
+  },
+  "recovery": { "rto": "15 Minutes", "rpo": "No Data Loss" },
+  "population": { "userCount": "10000+", "expectedGrowth": "5x in 24 months" },
+  "integrations": [
+    { "source": "Payments Hub", "destination": "Card Network", "protocol": "HTTPS", "authentication": "mTLS", "dataDirection": "bidirectional" },
+    { "source": "Payments Hub", "destination": "Fraud Vendor", "protocol": "HTTPS", "authentication": "OAuth2", "dataDirection": "bidirectional" },
+    { "source": "Payments Hub", "destination": "GL System", "protocol": "Kafka", "authentication": "mTLS", "dataDirection": "outbound" }
+  ],
+  "compliance": { "frameworks": ["PCI DSS", "SOC2", "NIST 800-53", "NIST CSF 2.0", "DORA"] },
+  "hosting": { "model": "AWS" },
+  "advanced": { "multiRegion": true, "forceMfa": true, "preferredAwsRegion": "us-east-1", "loggingRetentionDays": 730 }
+}

@@ -1,0 +1,37 @@
+# Build / OS / editor noise — not needed in the image
+node_modules
+dist
+coverage
+.run
+.data
+archive
+releases
+.git
+.github
+.gitignore
+.idea
+.vscode
+.DS_Store
+Thumbs.db
+*.log
+*.swp
+*~
+
+# Tests + docs do not run in the container
+tests
+docs
+examples
+deploy/helm
+deploy/terraform
+CHANGELOG.md
+CONTRIBUTING.md
+CODEOWNERS
+SECURITY.md
+RELEASE_NOTES.md
+
+# Secrets / env
+.env
+.env.*
+secrets
+*.pem
+*.key

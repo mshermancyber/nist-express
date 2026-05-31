@@ -1,0 +1,42 @@
+# Build output
+node_modules/
+dist/
+coverage/
+
+# Runtime state — NEVER commit
+.run/
+.data/
+
+# Local backups + release artifacts (kept locally, not in the repo)
+backups/
+archive/
+releases/
+
+# Logs
+*.log
+*.log.*
+
+# Editor / OS noise
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# Test artifacts
+.nyc_output/
+junit*.xml
+
+# OS
+Thumbs.db
+desktop.ini
+
